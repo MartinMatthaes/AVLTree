@@ -10,7 +10,7 @@ namespace AVLTree
     {
         private class Node
         {
-            public T Value;
+            public T Value { get; set; } = default;
             public int Height;
             public Node Left;
             public Node Right;
