@@ -8,7 +8,8 @@ namespace AVLTree
 {
     public class AVLTree<T>
     {
-        private class Node
+        // Node class with properties for value, height, left and right child nodes.
+        public class Node
         {
             public T Value { get; set; } = default;
             public int Height;
@@ -21,25 +22,30 @@ namespace AVLTree
                 Height = 1;
             }
         }
+        // Root node of the AVL tree
+        public Node root;
+        // Comparison delegate used to compare values
+        public Comparison<T> compare;
 
-        private Node root;
-        private Comparison<T> compare;
-
+        // Constructor
         public AVLTree(Comparison<T> comparison)
         {
             compare = comparison;
         }
 
+        // Helper method to get the height of a node
         private int GetHeight(Node node)
         {
             return node?.Height ?? 0;
         }
 
+        // Helper method to get the balance factor of a node
         private int GetBalanceFactor(Node node)
         {
             return GetHeight(node.Right) - GetHeight(node.Left);
         }
 
+        // Helper method to perform a right rotation on a node
         private Node RightRotate(Node node)
         {
             Node newRoot = node.Left;
@@ -50,6 +56,7 @@ namespace AVLTree
             return newRoot;
         }
 
+        // Helper method to perform a left rotation on a node
         private Node LeftRotate(Node node)
         {
             Node newRoot = node.Right;
@@ -60,6 +67,7 @@ namespace AVLTree
             return newRoot;
         }
 
+        // Helper method to balance a node
         private Node Balance(Node node)
         {
             int balanceFactor = GetBalanceFactor(node);
@@ -86,11 +94,13 @@ namespace AVLTree
             return node;
         }
 
+        // Public method to add a value
         public void Add(T value)
         {
             root = Add(root, value);
         }
 
+        // Private method to add a value
         private Node Add(Node node, T value)
         {
             if (node == null)
@@ -113,11 +123,14 @@ namespace AVLTree
             }
             return Balance(node);
         }
+        // Public method to check if a node contains a value
         public bool Contains(T value)
         {
             return Contains(root, value);
         }
 
+   
+        // Private method to check if a node contains a value
         private bool Contains(Node node, T value)
         {
             if (node == null)
@@ -140,11 +153,13 @@ namespace AVLTree
             }
         }
 
+        // Public method to remove a value
         public void Remove(T value)
         {
             root = Remove(root, value);
         }
 
+        // Private method to remove a value
         private Node Remove(Node node, T value)
         {
             if (node == null)
@@ -163,13 +178,9 @@ namespace AVLTree
             }
             else
             {
-                if (node.Left == null)
+                if (node.Left == null || node.Right == null)
                 {
-                    node = node.Right;
-                }
-                else if (node.Right == null)
-                {
-                    node = node.Left;
+                    node = (node.Left == null) ? node.Right : node.Left;
                 }
                 else
                 {
@@ -187,6 +198,28 @@ namespace AVLTree
             return Balance(node);
         }
 
+        // Public method to find a value
+        public Node Find(T value)
+        {
+            return FindHelper(root, value);
+        }
+
+        // Private method to help the public method to find a value
+        private Node FindHelper(Node node, T value)
+        {
+            if (node == null)
+                return null;
+
+            int compareResult = Comparer<T>.Default.Compare(value, node.Value);
+            if (compareResult < 0)
+                return FindHelper(node.Left, value);
+            else if (compareResult > 0)
+                return FindHelper(node.Right, value);
+            else
+                return node;
+        }
+
+        // Private method to find min value of the tree
         private Node FindMin(Node node)
         {
             while (node.Left != null)
@@ -196,11 +229,23 @@ namespace AVLTree
             return node;
         }
 
+        // Private method to find the max value of the tree
+        private Node FindMax(Node node)
+        {
+            while (node.Right != null)
+            {
+                node = node.Right;
+            }
+            return node;
+        }
+
+        // Public method to give the max depth of the tree
         public int MaxDepth()
         {
             return MaxDepth(root);
         }
 
+        // Private helper method to find max depth
         private int MaxDepth(Node node)
         {
             if (node == null)
